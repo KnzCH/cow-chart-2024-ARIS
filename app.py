@@ -16,7 +16,7 @@ def google_sheet_to_csv_url(sheet_url):
         raise ValueError("Invalid Google Sheets URL or sheet ID not found.")
     
     # Construct the CSV export URL
-    csv_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
+    csv_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv'
     return csv_url
 
 # Setup Streamlit
