@@ -3,23 +3,21 @@ import pandas as pd
 import plotly.express as px
 from urllib.parse import urlparse
 
-# Function to convert Google Sheets URL to CSV link
 def google_sheet_to_csv_url(sheet_url):
-    # Parse the URL to extract the sheet ID
     parsed_url = urlparse(sheet_url)
     path_parts = parsed_url.path.split('/')
     
-    # The sheet ID is the 3rd part of the path in the URL (index 2)
     if len(path_parts) >= 3:
         sheet_id = path_parts[3]
     else:
         raise ValueError("Invalid Google Sheets URL or sheet ID not found.")
     
-    # Construct the CSV export URL
     csv_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv'
     return csv_url
 
-# Setup Streamlit
+#####################################################
+# Setup Document
+######################################################
 st.title("Cow Behavior Summarizer")
 st.subheader("How to use")
 st.write(":green-background[ขั้นตอนที่ 1] ตรวจสอบหัวตารางของชีทว่าเขียนถูกต้องตามภาพ")
@@ -31,6 +29,11 @@ st.write(":green-background[ขั้นตอนที่ 3] เลือกว
 
 st.divider()
 
+
+#####################################################
+# Setup Generator
+######################################################
+
 st.title("Cow Behavior Graph Generator")
 
 sheet_url = st.text_input("Enter Google Sheets URL:")
@@ -38,16 +41,16 @@ if sheet_url:
     csv_link = google_sheet_to_csv_url(sheet_url)
     data = pd.read_csv(csv_link)
 
-    # Normalize column names to lowercase
+    # Normalize Case
     data.columns = [col.lower() for col in data.columns]
 
-    # Convert Date + Time to datetime format, skipping broken formats
+    # Convert Date + Time to datetime format, skipping broken date and time
     data['datetime'] = pd.to_datetime(data['date'] + ' ' + data['time'], format='%d-%m-%Y %H.%M.%S', errors='coerce')
 
-    # Drop rows where 'datetime' is NaT
+    # Drop rows where 'datetime' is empty or null
     data = data.dropna(subset=['datetime'])
 
-    # Calculate the time difference between behaviors
+    # Calculate the time difference btween behavior
     data['duration'] = data['datetime'].shift(-1) - data['datetime']
 
     # Drop NA rows
@@ -56,7 +59,6 @@ if sheet_url:
     # Define behaviors
     behaviors = ['ยืน', 'นอน', 'กิน', 'ดื่ม', 'เกย', 'คร่อม', 'ยืนติดรั้ว']
 
-    # Select Cow that you want to see its behavior summary
     cow_options = {
         "cow-a (black)": data.columns[2],
         "cow-b (white-pattern)": data.columns[3],
@@ -84,12 +86,11 @@ if sheet_url:
                           title=f'Behavior Timeline of {cow_name}',
                           height=600)
 
-        # Calculate the unique days for vertical lines
+        # Calculate date to create V-line
         unique_days = pd.date_range(start=filtered_data['datetime'].min().normalize(), 
                                     end=filtered_data['datetime'].max().normalize(), 
                                     freq='D')
 
-        # Add vertical lines for each unique day
         shapes = [dict(
             type='line',
             x0=day,
@@ -98,6 +99,10 @@ if sheet_url:
             y1=len(behaviors) - 0.5,
             line=dict(color='white', width=1)
         ) for day in unique_days]
+
+#####################################################
+# Figure Plotting
+######################################################
 
         fig.update_layout(
             xaxis_title='วันที่ & เวลา',
@@ -120,6 +125,6 @@ if sheet_url:
             plot_bgcolor='black',
             paper_bgcolor='black',
             font=dict(size=12, color='white'),
-            shapes=shapes  # Add the shapes (vertical lines) to the figure
+            shapes=shapes  
         )
         st.plotly_chart(fig)
