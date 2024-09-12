@@ -58,7 +58,7 @@ if sheet_url:
     data = data.dropna(subset=['duration'])
 
     # Define behaviors
-    behaviors = ['ยืน', 'นอน', 'กิน', 'ดื่ม', 'เกย', 'คร่อม', 'ยืนติดรั้ว']
+    behaviors = ['ยืน', 'นอน', 'กิน', 'ดื่ม', 'เกย', 'คร่อม', 'ยืนติดรั้ว', 'ยืนนิ่ง', 'หาย']
 
     cow_options = {
         "cow-a (black)": data.columns[2],
