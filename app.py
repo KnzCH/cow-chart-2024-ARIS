@@ -37,7 +37,7 @@ st.divider()
 
 st.title("Cow Behavior Graph Generator")
 
-sheet_url = st.text_input("Enter Google Sheets URL:")
+sheet_url = st.text_input(":blue-background[Enter Google Sheets URL:]")
 if sheet_url:
     csv_link = google_sheet_to_csv_url(sheet_url)
     data = pd.read_csv(csv_link)
@@ -66,7 +66,7 @@ if sheet_url:
         "cow-c (black-pattern)": data.columns[4]
     }
     
-    cow_name = st.selectbox("Select Cow", list(cow_options.keys()))
+    cow_name = st.selectbox(":blue-background[Select Cow]", list(cow_options.keys()))
 
     if cow_name:
         column_name = cow_options[cow_name]
