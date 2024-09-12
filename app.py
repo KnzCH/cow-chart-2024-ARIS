@@ -1,45 +1,37 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 
 # Function to convert Google Sheets URL to CSV link
 def google_sheet_to_csv_url(sheet_url):
-    # Parse the URL to extract the sheet ID
     parsed_url = urlparse(sheet_url)
     path_parts = parsed_url.path.split('/')
-    
-    # The sheet ID is the 3rd part of the path in the URL (index 2)
     if len(path_parts) >= 3:
         sheet_id = path_parts[3]
     else:
         raise ValueError("Invalid Google Sheets URL or sheet ID not found.")
-    
-    # Construct the CSV export URL
     csv_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
     return csv_url
 
-# Setup Streamlit
-st.title("Cow Behavior Summarizer")
-st.subheader("How to use")
-st.write(":green-background[ขั้นตอนที่ 1] ตรวจสอบหัวตารางของชีทว่าเขียนถูกต้องตามภาพ")
-st.image("sheet-header.png")
+# Function to display cow behavior analysis
+def show_cow_behavior_analysis(data):
+    st.title("Cow Behavior Analysis Program")
 
-st.write(":green-background[ขั้นตอนที่ 2]  คัดลอก URL ของชีทตัวเองมาวาง พร้อมตรวจสอบให้แน่ใจว่าแชร์เป็นสาธารณะแบบ Viewer แล้ว")
-st.image("how-to-copy.png",width=400)
-st.write(":green-background[ขั้นตอนที่ 3] เลือกวัวที่ต้องการดูสรุปพฤติกรรม เมื่อเลือกแล้วจะมีตารางเวลาออกมา สามารถซูมเข้าลอกด้วยการลากหรือใช้เครื่องมือขวาบนของกราฟได้")
-
-
-st.divider()
-
-st.title("Cow Behavior Graph Generator")
-sheet_url = st.text_input("Enter Google Sheets URL:")
-if sheet_url:
-    csv_link = google_sheet_to_csv_url(sheet_url)
-    data = pd.read_csv(csv_link)
-
+    # Check and display the columns of the DataFrame
+    st.write("Data Columns:", data.columns)
+    
+    # Prompt user to check if the column names match
+    st.write("Please verify the following columns exist in your data:")
+    st.write("Expected columns: 'date', 'time'")
+    
     # Normalize column names to lowercase
     data.columns = [col.lower() for col in data.columns]
+
+    # Check if expected columns exist
+    if 'date' not in data.columns or 'time' not in data.columns:
+        st.error("Columns 'date' or 'time' not found in the data.")
+        return
 
     # Create Date + Time format
     data['datetime'] = pd.to_datetime(data['date'] + ' ' + data['time'], format='%d-%m-%Y %H.%M.%S')
@@ -81,10 +73,9 @@ if sheet_url:
                           title=f'Behavior Timeline of {cow_name}',
                           height=600)
 
-        # Figure Styling!
         fig.update_layout(
-            xaxis_title='วันที่ & เวลา',
-            yaxis_title='พฤติกรรม',
+            xaxis_title='Date & Time',
+            yaxis_title='Behavior',
             yaxis=dict(
                 tickmode='array',
                 tickvals=list(range(len(behaviors))),
@@ -105,3 +96,16 @@ if sheet_url:
             font=dict(size=12, color='white')
         )
         st.plotly_chart(fig)
+    else:
+        st.error("No data to display.")
+
+# Setup Streamlit
+st.title("Cow Behavior Graph Generator")
+sheet_url = st.text_input("Enter Google Sheets URL:")
+if sheet_url:
+    csv_link = google_sheet_to_csv_url(sheet_url)
+    try:
+        data = pd.read_csv(csv_link)
+        show_cow_behavior_analysis(data)
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
