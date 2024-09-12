@@ -42,7 +42,7 @@ if sheet_url:
     data.columns = [col.lower() for col in data.columns]
 
     # Create Date + Time format
-    data['datetime'] = pd.to_datetime(data['Date'] + ' ' + data['time'], format='%d-%m-%Y %H.%M.%S')
+    data['datetime'] = pd.to_datetime(data['date'] + ' ' + data['time'], format='%d-%m-%Y %H.%M.%S')
 
     # Calculate the time difference between behaviors
     data['duration'] = data['datetime'].shift(-1) - data['datetime']
