@@ -123,8 +123,8 @@ if sheet_url:
             ),
             autosize=True,
             margin=dict(l=40, r=40, t=40, b=100),
-            plot_bgcolor='black',
-            paper_bgcolor='black',
+            plot_bgcolor="#242424",
+            paper_bgcolor='#242424',
             font=dict(size=12, color='white'),
             shapes=shapes  
         )
