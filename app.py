@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 
 # Function to convert Google Sheets URL to CSV link
 def google_sheet_to_csv_url(sheet_url):
@@ -26,9 +26,8 @@ st.write(":green-background[ขั้นตอนที่ 1] ตรวจสอ
 st.image("sheet-header.png")
 
 st.write(":green-background[ขั้นตอนที่ 2]  คัดลอก URL ของชีทตัวเองมาวาง พร้อมตรวจสอบให้แน่ใจว่าแชร์เป็นสาธารณะแบบ Viewer แล้ว")
-st.image("how-to-copy.png",width=400)
+st.image("how-to-copy.png", width=400)
 st.write(":green-background[ขั้นตอนที่ 3] เลือกวัวที่ต้องการดูสรุปพฤติกรรม เมื่อเลือกแล้วจะมีตารางเวลาออกมา สามารถซูมเข้าลอกด้วยการลากหรือใช้เครื่องมือขวาบนของกราฟได้")
-
 
 st.divider()
 
@@ -42,8 +41,11 @@ if sheet_url:
     # Normalize column names to lowercase
     data.columns = [col.lower() for col in data.columns]
 
-    # Create Date + Time format
-    data['datetime'] = pd.to_datetime(data['date'] + ' ' + data['time'], format='%d-%m-%Y %H.%M.%S')
+    # Convert Date + Time to datetime format, skipping broken formats
+    data['datetime'] = pd.to_datetime(data['date'] + ' ' + data['time'], format='%d-%m-%Y %H.%M.%S', errors='coerce')
+
+    # Drop rows where 'datetime' is NaT
+    data = data.dropna(subset=['datetime'])
 
     # Calculate the time difference between behaviors
     data['duration'] = data['datetime'].shift(-1) - data['datetime']
