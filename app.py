@@ -105,6 +105,41 @@ if sheet_url:
             margin=dict(l=40, r=40, t=40, b=100),
             plot_bgcolor='black',
             paper_bgcolor='black',
-            font=dict(size=12, color='white')
+            font=dict(size=12, color='white'),
+            shapes=[
+                # Add white lines for better clarity
+                dict(
+                    type='line',
+                    x0=filtered_data['datetime'].min(),
+                    x1=filtered_data['datetime'].max(),
+                    y0=-0.5,
+                    y1=-0.5,
+                    line=dict(color='white', width=1)
+                ),
+                dict(
+                    type='line',
+                    x0=filtered_data['datetime'].min(),
+                    x1=filtered_data['datetime'].max(),
+                    y0=len(behaviors) - 0.5,
+                    y1=len(behaviors) - 0.5,
+                    line=dict(color='white', width=1)
+                ),
+                dict(
+                    type='line',
+                    x0=filtered_data['datetime'].min(),
+                    x1=filtered_data['datetime'].min(),
+                    y0=-0.5,
+                    y1=len(behaviors) - 0.5,
+                    line=dict(color='white', width=1)
+                ),
+                dict(
+                    type='line',
+                    x0=filtered_data['datetime'].max(),
+                    x1=filtered_data['datetime'].max(),
+                    y0=-0.5,
+                    y1=len(behaviors) - 0.5,
+                    line=dict(color='white', width=1)
+                )
+            ]
         )
-        st.plotly_chart(fig, theme="streamlit")
+        st.plotly_chart(fig)
