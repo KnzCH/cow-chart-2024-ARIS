@@ -84,7 +84,21 @@ if sheet_url:
                           title=f'Behavior Timeline of {cow_name}',
                           height=600)
 
-        # Figure Styling!
+        # Calculate the unique days for vertical lines
+        unique_days = pd.date_range(start=filtered_data['datetime'].min().normalize(), 
+                                    end=filtered_data['datetime'].max().normalize(), 
+                                    freq='D')
+
+        # Add vertical lines for each unique day
+        shapes = [dict(
+            type='line',
+            x0=day,
+            x1=day,
+            y0=-0.5,
+            y1=len(behaviors) - 0.5,
+            line=dict(color='white', width=1)
+        ) for day in unique_days]
+
         fig.update_layout(
             xaxis_title='วันที่ & เวลา',
             yaxis_title='พฤติกรรม',
@@ -106,40 +120,6 @@ if sheet_url:
             plot_bgcolor='black',
             paper_bgcolor='black',
             font=dict(size=12, color='white'),
-            shapes=[
-                # Add white lines for better clarity
-                dict(
-                    type='line',
-                    x0=filtered_data['datetime'].min(),
-                    x1=filtered_data['datetime'].max(),
-                    y0=-0.5,
-                    y1=-0.5,
-                    line=dict(color='white', width=1)
-                ),
-                dict(
-                    type='line',
-                    x0=filtered_data['datetime'].min(),
-                    x1=filtered_data['datetime'].max(),
-                    y0=len(behaviors) - 0.5,
-                    y1=len(behaviors) - 0.5,
-                    line=dict(color='white', width=1)
-                ),
-                dict(
-                    type='line',
-                    x0=filtered_data['datetime'].min(),
-                    x1=filtered_data['datetime'].min(),
-                    y0=-0.5,
-                    y1=len(behaviors) - 0.5,
-                    line=dict(color='white', width=1)
-                ),
-                dict(
-                    type='line',
-                    x0=filtered_data['datetime'].max(),
-                    x1=filtered_data['datetime'].max(),
-                    y0=-0.5,
-                    y1=len(behaviors) - 0.5,
-                    line=dict(color='white', width=1)
-                )
-            ]
+            shapes=shapes  # Add the shapes (vertical lines) to the figure
         )
         st.plotly_chart(fig)
