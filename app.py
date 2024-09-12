@@ -50,7 +50,8 @@ if st.button("Generate"):
     
     if uploaded_file:
         try:
-            data = pd.read_csv(uploaded_file)
+            # Remove the first row if it contains unwanted headers
+            data = pd.read_csv(uploaded_file, skiprows=1)
         except Exception as e:
             st.error(f"Error reading the uploaded file: {e}")
     
@@ -58,13 +59,19 @@ if st.button("Generate"):
         # Normalize column names to lowercase
         data.columns = [col.lower() for col in data.columns]
 
-        # Create Date + Time format
-        data['datetime'] = pd.to_datetime(data['date'] + ' ' + data['time'], format='%d-%m-%Y %H.%M.%S')
+        # Preprocess datetime column
+        try:
+            data['datetime'] = pd.to_datetime(data['date'] + ' ' + data['time'], errors='coerce')
+        except Exception as e:
+            st.error(f"Error converting datetime: {e}")
+
+        # Drop NA rows
+        data = data.dropna(subset=['datetime'])
 
         # Calculate the time difference between behaviors
         data['duration'] = data['datetime'].shift(-1) - data['datetime']
 
-        # Drop NA rows
+        # Drop NA rows in duration
         data = data.dropna(subset=['duration'])
 
         # Define behaviors
@@ -122,5 +129,3 @@ if st.button("Generate"):
                 font=dict(size=12, color='white')
             )
             st.plotly_chart(fig)
-    else:
-        st.warning("Please provide a Google Sheets URL or upload a CSV file.")
