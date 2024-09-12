@@ -5,18 +5,16 @@ from urllib.parse import urlparse, parse_qs
 
 # Function to convert Google Sheets URL to CSV link
 def google_sheet_to_csv_url(sheet_url):
-    # Parse the URL to extract the sheet ID
-    parsed_url = urlparse(sheet_url)
-    path_parts = parsed_url.path.split('/')
-    
-    # The sheet ID is the 3rd part of the path in the URL (index 2)
-    if len(path_parts) >= 3:
-        sheet_id = path_parts[3]
-    else:
-        raise ValueError("Invalid Google Sheets URL or sheet ID not found.")
-    
-    # Construct the CSV export URL
-    csv_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
+ # Regular expression to match and capture the necessary part of the URL
+    pattern = r'https://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)(/edit#gid=(\d+)|/edit.*)?'
+
+    # Replace function to construct the new URL for CSV export
+    # If gid is present in the URL, it includes it in the export URL, otherwise, it's omitted
+    replacement = lambda m: f'https://docs.google.com/spreadsheets/d/{m.group(1)}/export?' + (f'gid={m.group(3)}&' if m.group(3) else '') + 'format=csv'
+
+    # Replace using regex
+    new_url = re.sub(pattern, replacement, sheet_url)
+
     return csv_url
 
 # Setup Streamlit
