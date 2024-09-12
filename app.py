@@ -14,7 +14,7 @@ def google_sheet_to_csv_url(sheet_url):
     replacement = lambda m: f'https://docs.google.com/spreadsheets/d/{m.group(1)}/export?' + (f'gid={m.group(3)}&' if m.group(3) else '') + 'format=csv'
 
     # Replace using regex
-    new_url = re.sub(pattern, replacement, sheet_url)
+    csv_url = re.sub(pattern, replacement, sheet_url)
 
     return csv_url
 
