@@ -122,9 +122,9 @@ if sheet_url:
                 tickfont=dict(color='white')
             ),
             autosize=True,
-            margin=dict(l=40, r=40, t=40, b=100),
+            margin=dict(l=40, r=40, t=40, b=80),
             plot_bgcolor='black',
-            paper_bgcolor='black',
+            paper_bgcolor='white',
             font=dict(size=12, color='white'),
             shapes=shapes  
         )
