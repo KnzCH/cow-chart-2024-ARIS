@@ -33,20 +33,7 @@ st.write(":green-background[ขั้นตอนที่ 3] เลือกว
 st.divider()
 
 st.title("Cow Behavior Graph Generator")
-# Option to choose input method
-input_method = st.radio("Choose input method:", ["Upload CSV File", "Google Sheets URL"])
 
-data = None
-
-if input_method == "Upload CSV File":
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    if uploaded_file:
-        data = pd.read_csv(uploaded_file)
-elif input_method == "Google Sheets URL":
-    sheet_url = st.text_input("Enter Google Sheets URL:")
-    if sheet_url:
-        csv_link = google_sheet_to_csv_url(sheet_url)
-        data = pd.read_csv(csv_link)
 sheet_url = st.text_input("Enter Google Sheets URL:")
 if sheet_url:
     csv_link = google_sheet_to_csv_url(sheet_url)
