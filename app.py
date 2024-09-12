@@ -107,4 +107,4 @@ if sheet_url:
             paper_bgcolor='black',
             font=dict(size=12, color='white')
         )
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, theme="streamlit")
