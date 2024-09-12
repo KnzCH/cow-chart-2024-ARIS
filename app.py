@@ -81,9 +81,10 @@ if sheet_url:
                           title=f'Behavior Timeline of {cow_name}',
                           height=600)
 
+        # Figure Styling!
         fig.update_layout(
-            xaxis_title='Date & Time',
-            yaxis_title='Behavior',
+            xaxis_title='วันที่ & เวลา',
+            yaxis_title='พฤติกรรม',
             yaxis=dict(
                 tickmode='array',
                 tickvals=list(range(len(behaviors))),
@@ -99,7 +100,7 @@ if sheet_url:
             ),
             autosize=True,
             margin=dict(l=40, r=40, t=40, b=100),
-            plot_bgcolor='gray',
+            plot_bgcolor='black',
             paper_bgcolor='black',
             font=dict(size=12, color='white')
         )
