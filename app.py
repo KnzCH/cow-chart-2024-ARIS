@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from urllib.parse import urlparse, parse_qs
-
+import re
 # Function to convert Google Sheets URL to CSV link
 def google_sheet_to_csv_url(sheet_url):
  # Regular expression to match and capture the necessary part of the URL
