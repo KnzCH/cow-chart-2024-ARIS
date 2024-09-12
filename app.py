@@ -30,7 +30,6 @@ st.image("chart-menu.png")
 
 st.divider()
 
-
 #####################################################
 # Setup Generator
 ######################################################
@@ -51,7 +50,7 @@ if sheet_url:
     # Drop rows where 'datetime' is empty or null
     data = data.dropna(subset=['datetime'])
 
-    # Calculate the time difference btween behavior
+    # Calculate the time difference between behaviors
     data['duration'] = data['datetime'].shift(-1) - data['datetime']
 
     # Drop NA rows
@@ -75,7 +74,11 @@ if sheet_url:
         
         data['behavior_index'] = data[column_name].apply(lambda x: behaviors.index(x) if x in behaviors else -1)
         
-        filtered_data = data[data['behavior_index'] != -1]
+        # Filter out behaviors not present in the data
+        present_behavior_indices = data['behavior_index'].dropna().unique()
+        filtered_behaviors = [behaviors[i] for i in present_behavior_indices if i != -1]
+        
+        filtered_data = data[data['behavior_index'].isin(present_behavior_indices)]
         
         fig = px.timeline(filtered_data, 
                           x_start='datetime', 
@@ -97,21 +100,17 @@ if sheet_url:
             x0=day,
             x1=day,
             y0=-0.5,
-            y1=len(behaviors) - 0.5,
+            y1=len(filtered_behaviors) - 0.5,
             line=dict(color='white', width=1)
         ) for day in unique_days]
-
-#####################################################
-# Figure Plotting
-######################################################
 
         fig.update_layout(
             xaxis_title='วันที่ & เวลา',
             yaxis_title='พฤติกรรม',
             yaxis=dict(
                 tickmode='array',
-                tickvals=list(range(len(behaviors))),
-                ticktext=behaviors,
+                tickvals=list(range(len(filtered_behaviors))),
+                ticktext=filtered_behaviors,
                 title_font=dict(color='white'),
                 tickfont=dict(color='white')
             ),
@@ -126,6 +125,6 @@ if sheet_url:
             plot_bgcolor='black',
             paper_bgcolor='black',
             font=dict(size=12, color='white'),
-            shapes=shapes  
+            shapes=shapes
         )
         st.plotly_chart(fig)
